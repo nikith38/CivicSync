@@ -1,73 +1,146 @@
-# Welcome to your Lovable project
+# 🏙️ CivicSync – Citizen-Issue Reporting & Voting Platform
 
-## Project info
+## 📋 Project Overview
+CivicSync is a web-based platform designed to simulate a modern civic reporting system. It empowers authenticated citizens to report civic issues, browse public issues submitted by others, vote on what's important, and visualize resolution trends over time. The platform aims to provide a secure, scalable MVP that enables smooth issue lifecycle management and community participation.
 
-**URL**: https://lovable.dev/projects/ff3df2e2-319f-4465-b091-91dc8f433f60
+## 🎯 Objective
+Design and implement a fullstack application with proper authentication and authorization, enabling users to:
+- Report location-specific civic issues with supporting context.
+- View a real-time, paginated feed of all public issues.
+- Vote once on any issue to surface priority for resolution.
+- Track their personal reports and editing privileges.
+- Visualize status/category-wise issue breakdowns and voting trends.
+- Interact with both list-based and map-based representations of issues.
 
-## How can I edit this code?
+## 👥 User Role
+There is a single role in this application: a citizen user. However, the actions available to a user are based on ownership and issue status.
 
-There are several ways of editing your application.
+## 🔐 Authentication & Authorization
+- Users must be able to register and log in securely using email and password.
+- Auth tokens or sessions should persist across refresh.
+- Access to all core routes and actions must be gated by auth.
+- Users can:
+  - Only edit/delete their own issues.
+  - Only edit/delete issues that are still in Pending state.
+  - Vote only once per issue.
 
-**Use Lovable**
+## 📝 Core Features
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ff3df2e2-319f-4465-b091-91dc8f433f60) and start prompting.
+### 1. Report an Issue
+Users can create a civic issue report by submitting a form with:
+- **Title:** Short summary of the issue.
+- **Description:** Detailed explanation.
+- **Category:** Dropdown (Road, Water, Sanitation, Electricity, Other).
+- **Location:** Text-based (e.g., "Sector 15, Chandigarh").
+- **Image Upload:** Optional but functional.
+- **Status:** Auto-set to Pending on creation.
+- **Created At:** Timestamp auto-generated.
 
-Changes made via Lovable will be committed automatically to this repo.
+### 2. My Issues
+Each user has access to a "My Issues" dashboard:
+- Shows a list of their submitted issues.
+- Allows editing or deleting if the issue status is still Pending.
+- Displays current vote count and status.
+- Clickable to open issue details.
 
-**Use your preferred IDE**
+### 3. Public Issue Feed
+A globally visible, paginated list showing all reported issues:
+- Each card shows:
+  - Title
+  - Category
+  - Location
+  - Status (Pending, In Progress, Resolved)
+  - Vote count
+  - Time since reported
+- Feed supports:
+  - Search by title
+  - Filter by category or status
+  - Sort by newest or most-voted
+- Clicking a card takes the user to the full Issue Detail View with:
+  - Full description
+  - Uploaded image
+  - Location text
+  - Total votes
+  - Option to cast a vote (disabled if already voted)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 4. Voting System
+- Each user can vote once on any issue (stored with userID + issueID).
+- Vote count updates in real-time or on reload.
+- Vote button changes state post-vote (Voted ✔).
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 5. Dashboard & Analytics View
+A separate view accessible post-login, showing:
+- Donut/Bar chart of issue count per category.
+- Line chart showing daily issue submissions in the past 7 days.
+- Bar graph or table showing most-voted issues by category.
+- All visualizations should update dynamically with data.
 
-Follow these steps:
+### 6. Map View (Mandatory Feature)
+- Visualize reported issues on a map view.
+- Each issue is represented as a marker.
+- Clicking a marker shows:
+  - Title
+  - Status
+  - Number of votes
+- Locations can be static coordinates or mocked geolocation derived from text input.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 🧪 Additional Notes
+- Status of issue (Pending, In Progress, Resolved) can be manually updated in the database or through a button (optional for candidate to simulate resolution flow).
+- All images should be stored and retrievable — don't mock the upload flow.
+- UI should prioritize clarity, responsiveness, and visual feedback.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 🛠️ Technical Implementation
 
-# Step 3: Install the necessary dependencies.
-npm i
+### 🏗️ Architecture
+- **Frontend:** Built with React and TypeScript, utilizing Vite for fast development and building.
+- **Backend:** Supabase is used for authentication, database management, and storage.
+- **State Management:** Context API for global state management, particularly for user authentication.
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+### 📦 Key Technologies
+- **React:** For building the user interface.
+- **TypeScript:** For type safety and improved developer experience.
+- **Tailwind CSS:** For styling and responsive design.
+- **shadcn-ui:** For accessible and customizable UI components.
+- **Supabase:** For backend services, including authentication, database, and storage.
+- **React Query:** For efficient data fetching and caching.
 
-**Edit a file directly in GitHub**
+### 📁 Directory Structure
+- `src/pages/`: Contains the main application pages.
+- `src/components/`: Reusable UI components.
+- `src/context/`: Context providers for global state management.
+- `src/lib/`: Data access and utility functions.
+- `src/types/`: TypeScript type definitions.
+- `src/utils/`: Utility functions for common tasks.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### 🔄 Data Flow
+- **Data Fetching:** React Query is used to fetch data from Supabase, ensuring efficient caching and updates.
+- **User Actions:** User actions (like voting or reporting issues) trigger updates in the database, which are reflected in the UI in real-time.
 
-**Use GitHub Codespaces**
+### 📊 Data Models
+- **User:** Contains fields like `id`, `email`, `name`, and `createdAt`.
+- **Issue:** Contains fields like `id`, `title`, `description`, `category`, `location`, `status`, `createdAt`, `userId`, `imageUrl`, `votes`, `latitude`, and `longitude`.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### 🔗 Endpoints
+- **Authentication:**
+  - `/auth/signup`: Register a new user.
+  - `/auth/signin`: Log in an existing user.
+- **Issues:**
+  - `/issues`: Create a new issue.
+  - `/issues/:id`: Retrieve, update, or delete a specific issue.
+  - `/issues/:id/vote`: Record a vote on a specific issue.
+- **User Profiles:**
+  - `/users/profile`: Retrieve or update user profile information.
+- **Analytics:**
+  - `/analytics/trends`: Retrieve issue trends data.
+  - `/analytics/top-voted`: Retrieve the most voted issues.
 
-## What technologies are used for this project?
+## 🚀 Deployment
+- **Local Development:** Run `npm i` to install dependencies and `npm run dev` to start the development server.
+- **Deployment:** The project can be deployed via the Lovable platform, with support for custom domains.
 
-This project is built with:
+## 📝 Conclusion
+CivicSync is a robust platform that empowers communities to engage with local issues effectively. Its modern architecture and user-friendly design make it a valuable tool for civic engagement.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/ff3df2e2-319f-4465-b091-91dc8f433f60) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Feel free to explore the codebase and contribute to its development! If you have any questions or need further assistance, don't hesitate to reach out.
